@@ -1,9 +1,10 @@
 #pragma once
 
 #include <atomic>
-#include <fstream>
 
 namespace Metrics {
+
+enum class Type { Counter };
 
 class IMetrics {
 public:
