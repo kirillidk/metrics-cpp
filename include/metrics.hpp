@@ -1,6 +1,6 @@
 #pragma once
 
-#include <atomic>
+#include <atomic>  // std::atomic
 
 namespace Metrics {
 

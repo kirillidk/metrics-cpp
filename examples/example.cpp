@@ -8,7 +8,7 @@ int main() {
     auto counter = std::make_shared<Metrics::Counter>();
     reg->addMetric("HTTP requests RPS", counter);
 
-    auto httpRPS = reg->getCounter("HTTP requests RPS");
+    auto httpRPS = reg->getMetric<Metrics::Counter>("HTTP requests RPS");
 
     httpRPS->operator+=(32);
     httpRPS->reset();
