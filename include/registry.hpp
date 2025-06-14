@@ -3,6 +3,7 @@
 #include <dumper.hpp>
 #include <memory>  // std::shared_ptr
 #include <metrics.hpp>
+#include <mutex>          // std::mutex
 #include <string>         // std::string
 #include <string_view>    // std::string_view
 #include <unordered_map>  // std::unordered_map
