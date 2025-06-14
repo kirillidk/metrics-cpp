@@ -5,17 +5,20 @@
 int main() {
     auto reg = Metrics::getRegistry();
 
-    auto counter = std::make_shared<Metrics::Counter>(35);
-    reg->addMetric("HTTP requests RPS", counter);
+    Metrics::Counter cnt {35};
+    cnt.reset();
+    cnt++;
 
-    auto httpRPS = reg->getMetric<Metrics::Counter>("HTTP requests RPS1");
+    // reg->addMetric("HTTP requests RPS", cnt);
 
-    httpRPS->operator+=(32);
-    httpRPS->reset();
+    // auto httpRPS = reg->getMetric<Metrics::Counter>("HTTP requests RPS1");
 
-    auto dumper = std::make_shared<Metrics::Dumper>("example.txt");
-    auto worker = dumper->autoWrite(reg, std::chrono::seconds(1));
+    // httpRPS+=32;
+    // httpRPS->reset();
 
-    // some work
-    std::this_thread::sleep_for(std::chrono::seconds(4));
+    // auto dumper = std::make_shared<Metrics::Dumper>("example.txt");
+    // auto worker = dumper->autoWrite(reg, std::chrono::seconds(1));
+
+    // // some work
+    // std::this_thread::sleep_for(std::chrono::seconds(4));
 }

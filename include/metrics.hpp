@@ -1,35 +1,49 @@
 #pragma once
 
 #include <atomic>  // std::atomic
+#include <memory>  // std::shared_ptr
 
 namespace Metrics {
+
+// forward declarations
+class ICounter;
+
+std::shared_ptr<ICounter> createCounter();
 
 class IMetrics {
 public:
     virtual ~IMetrics() = default;
-    virtual void reset() = 0;
 };
 
-class Counter : public IMetrics {
-private:
-    std::atomic<uint64_t> m_value;
+template <typename T>
+class Wrapper : public T {
+protected:
+    const std::shared_ptr<T> m_value;
+    Wrapper(std::shared_ptr<T> value) : m_value(value) {}
+};
+
+class ICounter : public IMetrics {
 public:
-    Counter() noexcept { m_value.store(0); };
-    Counter(uint64_t value) noexcept { m_value.store(value); };
+    virtual uint64_t value() const = 0;
+    virtual void reset() = 0;
+    virtual ICounter& operator++(int) = 0;
+    virtual ICounter& operator+=(uint64_t value) = 0;
+};
+
+class Counter : public Wrapper<ICounter> {
+public:
+    Counter() noexcept : Wrapper(createCounter()) {}
+    Counter(std::shared_ptr<ICounter> value) noexcept : Wrapper(value) {}
+    Counter(uint64_t value) noexcept : Wrapper(createCounter()) {
+        *m_value += value;
+    }
     Counter(const Counter&) = delete;
     Counter(Counter&&) = delete;
-    ~Counter() = default;
 
-    Counter& operator++(int) {
-        m_value.fetch_add(1, std::memory_order_acq_rel);
-        return *this;
-    };
-    Counter& operator+=(uint32_t value) {
-        m_value.fetch_add(value, std::memory_order_acq_rel);
-        return *this;
-    };
-    uint64_t value() const { return m_value.load(std::memory_order_acquire); };
-    void reset() override { m_value.store(0, std::memory_order_release); };
+    uint64_t value() const override { return m_value->value(); }
+    void reset() { m_value->reset(); }
+    ICounter& operator++(int) { return (*m_value)++; }
+    ICounter& operator+=(uint64_t value) { return (*m_value += value); }
 };
 
 }  // namespace Metrics
