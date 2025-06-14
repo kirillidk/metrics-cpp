@@ -4,8 +4,6 @@
 
 namespace Metrics {
 
-enum class Type { Counter };
-
 class IMetrics {
 public:
     virtual ~IMetrics() = default;

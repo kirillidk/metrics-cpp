@@ -11,6 +11,7 @@ include_directories(
 add_library(metrics-lib-cpp
     src/metrics.cpp
     src/registry.cpp
+    src/dumper.cpp
 )
 
 file(GLOB EXAMPLE_SRCS
