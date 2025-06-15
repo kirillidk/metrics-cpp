@@ -37,7 +37,7 @@ public:
         Metrics::ValueVisitor<MetricType> visitor;
         m_metrics[key]->accept(visitor);
 
-        return visitor.m_value;
+        return visitor.getResult();
     }
 
     std::unordered_map<std::string, std::shared_ptr<IMetrics>> getMetricGroup();

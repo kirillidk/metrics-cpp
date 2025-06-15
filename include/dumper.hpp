@@ -14,6 +14,7 @@ class Dumper : public std::enable_shared_from_this<Dumper> {
 private:
     std::ofstream m_os;
     const std::string_view m_filename;
+    std::jthread m_worker;
 public:
     Dumper(std::string_view filename) : m_filename(filename) {
         m_os.open(std::string(filename));
@@ -24,10 +25,11 @@ public:
     }
 
     void write(std::shared_ptr<Metrics::Registry> registry);
-    std::jthread autoWrite(
+    void enableAutoWrite(
         std::shared_ptr<Metrics::Registry> registry,
         std::chrono::seconds interval
     );
+    void disableAutoWrite();
 };
 
 std::string getCurrentTimestamp();

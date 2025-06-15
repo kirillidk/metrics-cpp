@@ -13,7 +13,7 @@ void Dumper::write(std::shared_ptr<Metrics::Registry> registry) {
     ResetVisitor reset_visitor;
 
     for (const auto& [metric_name, metric_value] : registry->getMetricGroup()) {
-        sv_visitor.setCurrentName(metric_name);
+        sv_visitor.setMetricName(metric_name);
         metric_value->accept(sv_visitor);
         metric_value->accept(reset_visitor);
     }
@@ -22,22 +22,27 @@ void Dumper::write(std::shared_ptr<Metrics::Registry> registry) {
     m_os.flush();
 }
 
-std::jthread Dumper::autoWrite(
+void Dumper::enableAutoWrite(
     std::shared_ptr<Metrics::Registry> registry, std::chrono::seconds interval
 ) {
-    auto wp = weak_from_this();
+    if (m_worker.joinable()) return;
 
-    return std::jthread([wp, registry, interval](std::stop_token st) {
-        while (!st.stop_requested()) {
-            if (auto self = wp.lock()) {
-                self->write(registry);
-            } else {
-                break;
+    auto weak_self = weak_from_this();
+
+    m_worker =
+        std::jthread([weak_self, registry, interval](std::stop_token st) {
+            while (!st.stop_requested()) {
+                if (auto self = weak_self.lock()) {
+                    self->write(registry);
+                } else {
+                    break;
+                }
+                std::this_thread::sleep_for(interval);
             }
-            std::this_thread::sleep_for(interval);
-        }
-    });
+        });
 }
+
+void Dumper::disableAutoWrite() { m_worker.request_stop(); }
 
 std::string getCurrentTimestamp() {
     auto const tp = std::chrono::system_clock::now();
