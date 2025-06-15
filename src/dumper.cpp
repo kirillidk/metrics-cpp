@@ -2,19 +2,14 @@
 #include <dumper.hpp>
 #include <format>  // std::format
 #include <registry.hpp>
+#include <visitors.hpp>
 
 namespace Metrics {
 
 void Dumper::write(std::shared_ptr<Metrics::Registry> registry) {
     m_os << getCurrentTimestamp();
 
-    for (const auto& metric : registry->getMetricGroup()) {
-        m_os << std::format(" \"{}\" {}", metric.first, metric.second->value());
-        metric.second->reset();
-    }
-
-    m_os << '\n';
-    m_os.flush();
+    // todo
 }
 
 std::jthread Dumper::autoWrite(

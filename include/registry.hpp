@@ -7,21 +7,22 @@
 #include <string>         // std::string
 #include <string_view>    // std::string_view
 #include <unordered_map>  // std::unordered_map
+#include <visitors.hpp>
 
 namespace Metrics {
 
 class Registry {
 private:
     std::mutex m_mutex;
-    std::unordered_map<std::string, std::shared_ptr<Counter>> m_metrics;
+    std::unordered_map<std::string, std::shared_ptr<IMetrics>> m_metrics;
 public:
     void addMetric(
         std::string_view metric_name,
-        const std::shared_ptr<Counter> metric_value
+        const std::shared_ptr<IMetrics> metric_value
     );
 
     template <typename MetricType>
-    std::shared_ptr<MetricType> getMetric(std::string_view metric_name) {
+    MetricType getMetric(std::string_view metric_name) {
         static_assert(
             std::is_same_v<MetricType, Counter>, "Unsupported metric type"
         );
@@ -33,10 +34,13 @@ public:
             m_metrics[key] = std::make_shared<MetricType>();
         }
 
-        return m_metrics[key];
+        Metrics::ValueVisitor<MetricType> visitor;
+        m_metrics[key]->accept(visitor);
+
+        return visitor.m_value;
     }
 
-    std::unordered_map<std::string, std::shared_ptr<Counter>> getMetricGroup();
+    std::unordered_map<std::string, std::shared_ptr<IMetrics>> getMetricGroup();
 };
 
 std::shared_ptr<Registry> getRegistry();

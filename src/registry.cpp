@@ -4,13 +4,13 @@
 namespace Metrics {
 
 void Registry::addMetric(
-    std::string_view metric_name, const std::shared_ptr<Counter> metric_value
+    std::string_view metric_name, const std::shared_ptr<IMetrics> metric_value
 ) {
     std::lock_guard<std::mutex> lock(m_mutex);
     m_metrics[std::string(metric_name)] = metric_value;
 };
 
-std::unordered_map<std::string, std::shared_ptr<Counter>>
+std::unordered_map<std::string, std::shared_ptr<IMetrics>>
 Registry::getMetricGroup() {
     return m_metrics;
 }

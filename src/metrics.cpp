@@ -3,6 +3,8 @@
 
 namespace Metrics {
 
+void ICounter::accept(IMetricsVisitor& visitor) { visitor.visit(*this); }
+
 class CounterImpl : public ICounter {
 private:
     std::atomic<uint64_t> m_value;
