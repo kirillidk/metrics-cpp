@@ -12,7 +12,7 @@ std::shared_ptr<ICounter> createCounter();
 
 class IMetricsVisitor {
 public:
-    virtual void visit(ICounter&) = 0;
+    virtual void visit(std::shared_ptr<ICounter>) = 0;
 };
 
 class IMetrics {
@@ -30,7 +30,8 @@ public:
     std::shared_ptr<T> get_ptr() { return m_value; }
 };
 
-class ICounter : public IMetrics {
+class ICounter : public IMetrics,
+                 public std::enable_shared_from_this<ICounter> {
 public:
     virtual uint64_t value() const = 0;
     virtual void reset() = 0;

@@ -19,6 +19,9 @@ int main() {
 
     Metrics::Counter httpRPS =
         reg->getMetric<Metrics::Counter>("HTTP requests RPS");
+    httpRPS++;
+
+    std::cout << cnt2.value() << ' ' << httpRPS.value() << '\n';  // 1 1
 
     // auto dumper = std::make_shared<Metrics::Dumper>("example.txt");
     // auto worker = dumper->autoWrite(reg, std::chrono::seconds(1));

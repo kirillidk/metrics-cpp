@@ -3,7 +3,9 @@
 
 namespace Metrics {
 
-void ICounter::accept(IMetricsVisitor& visitor) { visitor.visit(*this); }
+void ICounter::accept(IMetricsVisitor& visitor) {
+    visitor.visit(shared_from_this());
+}
 
 class CounterImpl : public ICounter {
 private:
