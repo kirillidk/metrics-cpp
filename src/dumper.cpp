@@ -9,7 +9,17 @@ namespace Metrics {
 void Dumper::write(std::shared_ptr<Metrics::Registry> registry) {
     m_os << getCurrentTimestamp();
 
-    // todo
+    StringValueVisitor sv_visitor;
+    ResetVisitor reset_visitor;
+
+    for (const auto& [metric_name, metric_value] : registry->getMetricGroup()) {
+        sv_visitor.setCurrentName(metric_name);
+        metric_value->accept(sv_visitor);
+        metric_value->accept(reset_visitor);
+    }
+
+    m_os << sv_visitor.getResult() << '\n';
+    m_os.flush();
 }
 
 std::jthread Dumper::autoWrite(
