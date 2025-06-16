@@ -124,7 +124,7 @@ Example:
 ### Example CMakeLists.txt
 
 ```
-cmake_minimum_required(VERSION 3.31.4)
+cmake_minimum_required(VERSION 3.20)
 project(metric-lib-cpp-example)
 
 set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
