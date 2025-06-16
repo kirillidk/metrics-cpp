@@ -24,7 +24,9 @@ public:
     template <typename MetricType>
     MetricType getMetric(std::string_view metric_name) {
         static_assert(
-            std::is_same_v<MetricType, Counter>, "Unsupported metric type"
+            std::is_same_v<MetricType, Counter> ||
+                std::is_same_v<MetricType, Gauge>,
+            "Unsupported metric type"
         );
 
         std::lock_guard<std::mutex> lock(m_mutex);

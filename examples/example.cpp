@@ -21,27 +21,23 @@ int main() {
     }
 
     {
-        Metrics::Counter cnt1 {345};
-        reg->addMetric("HTTP requests RPS", cnt1.get_ptr());
+        Metrics::Gauge cpuUtilization {0.97};
 
-        reg->addMetric(
-            "HTTP requests RPS2", std::make_shared<Metrics::Counter>(1024)
-        );
+        reg->addMetric("CPU", cpuUtilization.get_ptr());
+        reg->addMetric("HTTP RPS", std::make_shared<Metrics::Counter>(42));
 
-        Metrics::Counter httpRPS =
-            reg->getMetric<Metrics::Counter>("HTTP requests RPS");
-
+        Metrics::Counter httpRPS = reg->getMetric<Metrics::Counter>("HTTP RPS");
         httpRPS += 20;
 
-        std::cout << httpRPS.value() << '\n';  // 365
+        std::cout << httpRPS.value() << '\n';  // 62
     }
 
     {
         dumper->enableAutoWrite(
             reg, std::chrono::seconds(1)
-        );  // writes for the lifetime of Dumper object
+        );  // asynchronously writes for the lifetime of Dumper object
     }
 
-    // some work
+    // further work in main thread
     std::this_thread::sleep_for(std::chrono::seconds(4));
 }

@@ -7,12 +7,15 @@ namespace Metrics {
 
 // forward declarations
 class ICounter;
+class IGauge;
 
 std::shared_ptr<ICounter> createCounter();
+std::shared_ptr<IGauge> createGauge();
 
 class IMetricsVisitor {
 public:
     virtual void visit(std::shared_ptr<ICounter>) = 0;
+    virtual void visit(std::shared_ptr<IGauge>) = 0;
 };
 
 class IMetrics {
@@ -41,6 +44,16 @@ public:
     void accept(IMetricsVisitor&) override;
 };
 
+class IGauge : public IMetrics, public std::enable_shared_from_this<IGauge> {
+public:
+    virtual double value() const = 0;
+    virtual void reset() = 0;
+    virtual IGauge& operator+=(double value) = 0;
+    virtual IGauge& operator-=(double value) = 0;
+
+    void accept(IMetricsVisitor&) override;
+};
+
 class Counter : public Wrapper<ICounter> {
 public:
     Counter() noexcept : Wrapper(createCounter()) {}
@@ -57,6 +70,22 @@ public:
     void reset() { m_value->reset(); }
     ICounter& operator++(int) { return (*m_value)++; }
     ICounter& operator+=(uint64_t value) { return (*m_value += value); }
+};
+
+class Gauge : public Wrapper<IGauge> {
+public:
+    Gauge() noexcept : Wrapper(createGauge()) {}
+    Gauge(std::shared_ptr<IGauge> value) noexcept : Wrapper(value) {}
+    Gauge(double value) noexcept : Wrapper(createGauge()) { *m_value += value; }
+    Gauge(const Gauge&) = default;
+    Gauge(Gauge&&) = default;
+    Gauge& operator=(const Gauge&) = default;
+    Gauge& operator=(Gauge&&) = default;
+
+    double value() const override { return m_value->value(); }
+    void reset() { m_value->reset(); }
+    IGauge& operator+=(double value) { return (*m_value += value); }
+    IGauge& operator-=(double value) { return (*m_value -= value); }
 };
 
 }  // namespace Metrics

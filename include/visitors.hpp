@@ -1,7 +1,8 @@
 #pragma once
 
 #include <metrics.hpp>
-#include <sstream>
+#include <sstream>      // std::ostringstream
+#include <type_traits>  // std::is_same_v
 
 namespace Metrics {
 
@@ -11,7 +12,15 @@ private:
     MetricType m_value;
 public:
     void visit(std::shared_ptr<ICounter> counter) override {
-        m_value = MetricType(counter);
+        if constexpr (std::is_same_v<MetricType, Counter>) {
+            m_value = MetricType(counter);
+        }
+    }
+
+    void visit(std::shared_ptr<IGauge> gauge) override {
+        if constexpr (std::is_same_v<MetricType, Gauge>) {
+            m_value = MetricType(gauge);
+        }
     }
 
     MetricType getResult() const { return m_value; }
@@ -20,6 +29,7 @@ public:
 class ResetVisitor : public IMetricsVisitor {
 public:
     void visit(std::shared_ptr<ICounter> counter) override { counter->reset(); }
+    void visit(std::shared_ptr<IGauge> counter) override { counter->reset(); }
 };
 
 class StringValueVisitor : public IMetricsVisitor {
@@ -29,6 +39,10 @@ private:
 public:
     void visit(std::shared_ptr<ICounter> counter) override {
         m_stream << " \"" << m_metric_name << "\" " << counter->value();
+    }
+
+    void visit(std::shared_ptr<IGauge> gauge) override {
+        m_stream << " \"" << m_metric_name << "\" " << gauge->value();
     }
 
     void setMetricName(const std::string& metric_name) {
