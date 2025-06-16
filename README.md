@@ -98,6 +98,8 @@ int main() {
     std::this_thread::sleep_for(std::chrono::seconds(4));
     
     // Auto-write will stop when dumper is destroyed
+    // Or you can manually disable it
+    dumper->disableAutoWrite();
 }
 ```
 
@@ -169,7 +171,8 @@ Registry (thread-safe storage)
 Dumper (file output)
 ├── write()
 ├── enableAutoWrite()
-└── disableAutoWrite()
+├── disableAutoWrite()
+└── reset()
 
 IMetricsVisitor (interface)
 ├── ValueVisitor<T>
@@ -269,3 +272,11 @@ responseTime += measured_time_ms;  // Add to running average
 - File output management
 - Automatic periodic writing with configurable intervals
 - Thread-safe operations with proper cleanup
+
+## Future Plans
+
+The following features are planned for future releases:
+
+- **Additional Metric Types**: Histogram, Summary
+- **Enhanced API**: Registry and Dumper Wrapper Classes
+- **Labels Support**: Ability to add key-value labels to metrics for better categorization and filtering
