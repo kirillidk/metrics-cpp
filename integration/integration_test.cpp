@@ -96,5 +96,6 @@ TEST_CASE("Complete metrics library integration test", "[integration]") {
     REQUIRE(content.find(":") != std::string::npos);  // time separator
 
     // Clean up
+    dumper->reset();
     std::filesystem::remove(test_filename);
 }

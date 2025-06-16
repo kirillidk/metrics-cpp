@@ -30,6 +30,9 @@ public:
         std::chrono::seconds interval
     );
     void disableAutoWrite();
+    void reset() {
+        if (m_os.is_open()) m_os.close();
+    }
 };
 
 std::string getCurrentTimestamp();
