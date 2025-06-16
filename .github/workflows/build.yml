@@ -1,6 +1,6 @@
 # This starter workflow is for a CMake project running on multiple platforms. There is a different starter workflow if you just want a single platform.
 # See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-single-platform.yml
-name: CMake on multiple platforms
+name: Mainline
 
 on:
   push:
@@ -10,6 +10,7 @@ on:
 
 jobs:
   build:
+    name: Build
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -69,40 +70,3 @@ jobs:
     - name: Build
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
-
-    - name: Run integration test
-      working-directory: ${{ steps.strings.outputs.build-output-dir }}
-      # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
-      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-      run: ctest --output-on-failure -L integration --build-config ${{ matrix.build_type }}
-
-  integration:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set build dir
-        id: vars2
-        run: echo "BUILD_DIR=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
-
-      - name: Configure CMake
-        run: >
-          cmake -B ${{ steps.vars2.outputs.BUILD_DIR }}
-          -DCMAKE_CXX_COMPILER=g++
-          -DCMAKE_C_COMPILER=gcc
-          -DCMAKE_BUILD_TYPE=Release
-          -DMETRICS_BUILD_EXAMPLES=ON
-          -DMETRICS_BUILD_INTEGRATION=ON
-          -S ${{ github.workspace }}
-
-      - name: Build integration_test
-        run: >
-          cmake --build ${{ steps.vars2.outputs.BUILD_DIR }}
-          --config Release
-          --target integration_test
-
-      - name: Run integration test
-        working-directory: ${{ steps.vars2.outputs.BUILD_DIR }}
-        run: ctest -C Release -L integration --output-on-failure

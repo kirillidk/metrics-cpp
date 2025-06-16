@@ -1,0 +1,38 @@
+name: Integration
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  integration:
+    name: Integration test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set build dir
+        id: vars2
+        run: echo "BUILD_DIR=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+
+      - name: Configure CMake
+        run: >
+          cmake -B ${{ steps.vars2.outputs.BUILD_DIR }}
+          -DCMAKE_CXX_COMPILER=g++
+          -DCMAKE_C_COMPILER=gcc
+          -DCMAKE_BUILD_TYPE=Release
+          -DMETRICS_BUILD_INTEGRATION=ON
+          -S ${{ github.workspace }}
+
+      - name: Build integration test
+        run: >
+          cmake --build ${{ steps.vars2.outputs.BUILD_DIR }}
+          --config Release
+          --target integration_test
+
+      - name: Run integration test
+        working-directory: ${{ steps.vars2.outputs.BUILD_DIR }}
+        run: ctest -C Release -L integration --output-on-failure
