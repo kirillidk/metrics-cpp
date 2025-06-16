@@ -1,0 +1,38 @@
+name: Unit
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  unit-tests:
+    name: Unit tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set build dir
+        id: vars2
+        run: echo "BUILD_DIR=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+
+      - name: Configure CMake
+        run: >
+          cmake -B ${{ steps.vars2.outputs.BUILD_DIR }}
+          -DCMAKE_CXX_COMPILER=g++
+          -DCMAKE_C_COMPILER=gcc
+          -DCMAKE_BUILD_TYPE=Release
+          -DMETRICS_BUILD_TESTS=ON
+          -S ${{ github.workspace }}
+
+      - name: Build unit tests
+        run: >
+          cmake --build ${{ steps.vars2.outputs.BUILD_DIR }}
+          --config Release
+          --target unit_tests
+
+      - name: Run unit tests
+        working-directory: ${{ steps.vars2.outputs.BUILD_DIR }}
+        run: ctest -C Release -L unit --output-on-failure

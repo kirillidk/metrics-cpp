@@ -1,8 +1,9 @@
-#include <dumper.hpp>
-#include <iostream>
+#include <iostream>  // std::cout
+#include <memory>    // std::shared_ptr
+
 #include <metrics.hpp>
 #include <registry.hpp>
-#include <visitors.hpp>
+#include <dumper.hpp>
 
 int main() {
     std::shared_ptr<Metrics::Registry> reg = Metrics::getRegistry();

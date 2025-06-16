@@ -14,10 +14,12 @@ A high-efficient and thread-safe C++ metrics library
 ### Basic Example
 
 ```cpp
-#include <dumper.hpp>
-#include <iostream>
+#include <iostream> // std::cout
+#include <memory> // std::shared_ptr
+
 #include <metrics.hpp>
 #include <registry.hpp>
+#include <dumper.hpp>
 
 int main() {
     // Get global metrics registry

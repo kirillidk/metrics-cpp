@@ -17,3 +17,5 @@ AlignAfterOpenBracket: BlockIndent
 BreakConstructorInitializers: BeforeColon
 PointerAlignment: Left
 DerivePointerAlignment: false
+SortIncludes: false
+IncludeBlocks: Preserve
