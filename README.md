@@ -112,6 +112,33 @@ Example:
 2025-06-01 15:00:02.653 "CPU" 1.12 "HTTP RPS" 30
 ```
 
+## Build Requirements
+
+- **C++20** or newer (for `std::jthread`, `std::format`)
+- **Compiler**: GCC 10+, Clang 12+, MSVC 2022+
+
+### Example CMakeLists.txt
+
+```
+cmake_minimum_required(VERSION 3.31.4)
+project(metric-lib-cpp-example)
+
+set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+
+include(FetchContent)
+
+FetchContent_Declare(
+    metrics
+    GIT_REPOSITORY https://github.com/kirillidk/metrics-lib-cpp
+    GIT_TAG        main
+)
+FetchContent_MakeAvailable(metrics)
+
+add_executable(example example.cpp)
+target_link_libraries(example PRIVATE metrics-lib-cpp)
+```
+
 ## Architecture
 
 ### Core Components
