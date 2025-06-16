@@ -1,10 +1,9 @@
 cmake_minimum_required(VERSION 3.31.4)
 project(metrics-lib-cpp)
-
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+enable_testing()
 
 option(METRICS_BUILD_EXAMPLES "Build examples" OFF)
+option(METRICS_BUILD_INTEGRATION "Build integration test" OFF)
 
 add_library(metrics-lib-cpp
     src/metrics.cpp
@@ -23,7 +22,6 @@ target_include_directories(metrics-lib-cpp
       $<INSTALL_INTERFACE:include>
 )
 
-option(METRICS_BUILD_EXAMPLES "Build examples" ON)
 if (METRICS_BUILD_EXAMPLES)
   file(GLOB EXAMPLE_SRCS ${PROJECT_SOURCE_DIR}/examples/*.cpp)
   foreach(example_src ${EXAMPLE_SRCS})
@@ -31,4 +29,8 @@ if (METRICS_BUILD_EXAMPLES)
     add_executable(${example_name} ${example_src})
     target_link_libraries(${example_name} PRIVATE metrics-lib-cpp)
   endforeach()
+endif()
+
+if(METRICS_BUILD_INTEGRATION)
+  add_subdirectory(integration)
 endif()

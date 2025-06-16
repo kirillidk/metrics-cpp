@@ -40,7 +40,7 @@ int main() {
 }
 ```
 
-### Shared Counter Ownership
+### Shared Ownership
 
 ```cpp
 {
@@ -251,7 +251,6 @@ responseTime += measured_time_ms;  // Add to running average
 - Thread-safe counter with atomic operations
 - Supports increment (`++`), addition (`+=`), and reset operations
 - Uses `uint64_t` for integer values
-- Can be shared between multiple objects
 
 #### `Metrics::Gauge`
 - Thread-safe gauge for floating-point measurements
