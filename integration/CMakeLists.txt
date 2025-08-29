@@ -1,9 +1,15 @@
-add_executable(integration_test integration_test.cpp)
-target_link_libraries(integration_test
+find_package(Catch2 REQUIRED)
+
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
+        "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+)
+
+add_executable(integration_tests ${SOURCES})
+target_link_libraries(integration_tests
     PRIVATE
-        metrics-lib-cpp
+        ${METRICS_CPP_LIB}
         Catch2::Catch2WithMain
 )
 
-add_test(NAME integration_test COMMAND integration_test)
-set_tests_properties(integration_test PROPERTIES LABELS "integration")
+add_test(NAME integration_tests COMMAND integration_tests)
+set_tests_properties(integration_tests PROPERTIES LABELS "integration")
