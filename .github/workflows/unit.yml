@@ -14,9 +14,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Conan
+        run: pip install conan
+
+      - name: Create Conan profile
+        run: conan profile detect --force
+
       - name: Set build dir
         id: vars2
         run: echo "BUILD_DIR=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+
+      - name: Install dependencies
+        run: conan install . --output-folder=${{ steps.vars2.outputs.BUILD_DIR }} --build=missing -s build_type=Release
 
       - name: Configure CMake
         run: >
@@ -24,7 +38,8 @@ jobs:
           -DCMAKE_CXX_COMPILER=g++
           -DCMAKE_C_COMPILER=gcc
           -DCMAKE_BUILD_TYPE=Release
-          -DMETRICS_BUILD_TESTS=ON
+          -DBUILD_UNIT=ON
+          -DCMAKE_TOOLCHAIN_FILE=${{ steps.vars2.outputs.BUILD_DIR }}/conan_toolchain.cmake
           -S ${{ github.workspace }}
 
       - name: Build unit tests

@@ -48,6 +48,20 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install Conan
+      run: pip install conan
+
+    - name: Create Conan profile
+      run: conan profile detect --force
+
+    - name: Install dependencies
+      run: conan install . --output-folder=build --build=missing -s build_type=${{ matrix.build_type }}
+
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
       id: strings
@@ -63,8 +77,9 @@ jobs:
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-        -DMETRICS_BUILD_EXAMPLES=ON
-        -DMETRICS_BUILD_INTEGRATION=ON
+        -DBUILD_UNIT=ON
+        -DBUILD_INTEGRATION=ON
+        -DCMAKE_TOOLCHAIN_FILE=${{ steps.strings.outputs.build-output-dir }}/conan_toolchain.cmake
         -S ${{ github.workspace }}
 
     - name: Build

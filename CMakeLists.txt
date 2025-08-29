@@ -7,8 +7,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(METRICS_CPP_LIB "${CMAKE_PROJECT_NAME}_lib")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-option(BUILD_INTEGRATION "Build integration test" ON)
-option(BUILD_UNIT "Build unit tests" ON)
+option(BUILD_INTEGRATION "Build integration tests" OFF)
+option(BUILD_UNIT "Build unit tests" OFF)
 
 enable_testing()
 
