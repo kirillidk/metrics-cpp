@@ -46,7 +46,7 @@ jobs:
         run: >
           cmake --build ${{ steps.vars2.outputs.BUILD_DIR }}
           --config Release
-          --target integration_test
+          --target integration_tests
 
       - name: Run integration test
         working-directory: ${{ steps.vars2.outputs.BUILD_DIR }}
